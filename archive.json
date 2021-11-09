@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-10-26T00:17:22.858399+00:00",
+  "timestamp": "2021-11-09T00:17:49.259536+00:00",
   "repo": "unicorn-wg/oblivious-http",
   "labels": [
     {
@@ -1001,6 +1001,77 @@
       "body": "The current design doesn't add any data to requests, so servers are only able to provide anti-replay based on what they see: the encapsulation and the content of the HTTP request.\r\n\r\nOne common factor in anti-replay designs is time.  It is easier to apply anti-replay protections for timestamped requests as any state can be bounded in time: requests are rejected as being a replay if they fall outside a small time window.  Should we include a timestamp in requests?  Or, should we merely insist on the Date header field being present?  It is somewhat [unusual](https://httpwg.org/http-core/draft-ietf-httpbis-semantics-latest.html#rfc.section.6.6.1.p.10) for Date to be present on requests, but it is permitted.\r\n\r\nThe other thing to consider is clock drift.  TLS uses an anti-replay design that uses relative times, which means that only relative clock drift over a short time needs to be accounted for.  Here, we have no prior synchronization, so we are forced to use absolute times.  That likely means a greater allowance for clock drift.\r\n\r\nIt also likely means that we need to include a new signal to clients for when their time is so badly off that their requests are being rejected.  Experience shows that client clocks are terrifically bad, but given prompting they might be able to adjust to match the server clock.  We need to be *very* careful to ensure that this sort of signal is properly authenticated, so that if clients do retry requests, they aren't subject to attacks that might cause them to be complicit in generating a replay attack.\r\n\r\nWe might also consider a nonce or other anti-replay measures, but as clients are required to perform a new encapsulation for every request, the `enc` value can be used.\r\n\r\n(This issue is split from #70.)",
       "createdAt": "2021-10-26T00:14:59Z",
       "updatedAt": "2021-10-26T00:14:59Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 77,
+      "id": "I_kwDOE6fLGM4-cEq7",
+      "title": "Fixed mapping at the proxy",
+      "url": "https://github.com/unicorn-wg/oblivious-http/issues/77",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "The proxy has a fixed mapping.  It's resource maps to just one request resource.  That's a deliberate choice that we should probably be much more up front about.",
+      "createdAt": "2021-11-08T14:53:14Z",
+      "updatedAt": "2021-11-08T14:55:02Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "tfpauly",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Yes, I think this makes sense, but it took me a while to realize it when implementing. Having a section on mapping state on the proxy would be useful.",
+          "createdAt": "2021-11-08T14:55:02Z",
+          "updatedAt": "2021-11-08T14:55:02Z"
+        }
+      ]
+    },
+    {
+      "number": 78,
+      "id": "I_kwDOE6fLGM4-cFEY",
+      "title": "Use of binary HTTP",
+      "url": "https://github.com/unicorn-wg/oblivious-http/issues/78",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "The encapsulated payload could be something other than HTTP.  We should be clear about our decision to do that and how alternative payloads might be carried if people wanted to do that.",
+      "createdAt": "2021-11-08T14:54:43Z",
+      "updatedAt": "2021-11-08T17:35:48Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "tfpauly",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The clear example here would be allowing just a DNS message body. As long as the client and target agreed, they could use that without the proxy knowing. We could just loosen the restrictions on what the body is, or we could use different content types (if you want the proxy to know what it is?).",
+          "createdAt": "2021-11-08T15:05:23Z",
+          "updatedAt": "2021-11-08T15:05:23Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "MEMBER",
+          "body": "I think that the way you would do that is to define a new media type for DNS and then just go for it.  (Of course, you need to debate whether to include a length field and a transaction ID field.)  Maybe we don't need to do that in this draft, but we could explain how that might look.",
+          "createdAt": "2021-11-08T17:35:48Z",
+          "updatedAt": "2021-11-08T17:35:48Z"
+        }
+      ]
+    },
+    {
+      "number": 79,
+      "id": "I_kwDOE6fLGM4-dfg1",
+      "title": "longer list of use cases and conditions where oblivious-http would help",
+      "url": "https://github.com/unicorn-wg/oblivious-http/issues/79",
+      "state": "OPEN",
+      "author": "npdoty",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "I recognize that #42 / #44 added some conditions and use cases, but it would help readers like me to have even more. A separate explainer document/readme would be fine too.\r\n\r\nIn the meeting chat today, I heard the suggestion of requesting map tiles as another use case, which makes sense to me: asking for map tiles is itself pretty revealing if connected to the user's identity (it might reveal your current location, or a location where you're going to be) and can be pretty transactional/stateless. Maybe search queries are similar. Safe browsing lookups was also mentioned.\r\n\r\nHaving more example use cases might help in resolving other questions, like whether to support multiple HTTP requests at a time, or non-HTTP message bodies, etc. Ideally, we could explain the conditions under which adoption of ohttp will be useful -- maybe, a privacy need for reducing linkability of multiple requests or of a single request from user identity, and HTTP requests that are typically stateless or single-shot in some way, and frequent or performant-requiring at a certain level.",
+      "createdAt": "2021-11-08T21:06:05Z",
+      "updatedAt": "2021-11-08T21:06:05Z",
       "closedAt": null,
       "comments": []
     }
