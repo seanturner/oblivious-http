@@ -5,8 +5,8 @@
 HTTPBIS                                                       M. Thomson
 Internet-Draft                                                   Mozilla
 Intended status: Standards Track                               C.A. Wood
-Expires: 28 April 2022                                        Cloudflare
-                                                         25 October 2021
+Expires: 23 May 2022                                          Cloudflare
+                                                        19 November 2021
 
 
                  Binary Representation of HTTP Messages
@@ -38,7 +38,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 28 April 2022.
+   This Internet-Draft will expire on 23 May 2022.
 
 Copyright Notice
 
@@ -50,9 +50,9 @@ Copyright Notice
    license-info) in effect on the date of publication of this document.
    Please review these documents carefully, as they describe your rights
    and restrictions with respect to this document.  Code Components
-   extracted from this document must include Simplified BSD License text
-   as described in Section 4.e of the Trust Legal Provisions and are
-   provided without warranty as described in the Simplified BSD License.
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
 
 Table of Contents
 
@@ -651,16 +651,16 @@ Table of Contents
    [QUIC]     Iyengar, J., Ed. and M. Thomson, Ed., "QUIC: A UDP-Based
               Multiplexed and Secure Transport", RFC 9000,
               DOI 10.17487/RFC9000, May 2021,
-              <https://datatracker.ietf.org/doc/html/rfc9000>.
+              <https://www.rfc-editor.org/rfc/rfc9000>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
-              <https://datatracker.ietf.org/doc/html/rfc2119>.
+              <https://www.rfc-editor.org/rfc/rfc2119>.
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
-              May 2017, <https://datatracker.ietf.org/doc/html/rfc8174>.
+              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
 
 9.2.  Informative References
 
@@ -672,7 +672,7 @@ Table of Contents
 
    [HPACK]    Peon, R. and H. Ruellan, "HPACK: Header Compression for
               HTTP/2", RFC 7541, DOI 10.17487/RFC7541, May 2015,
-              <https://datatracker.ietf.org/doc/html/rfc7541>.
+              <https://www.rfc-editor.org/rfc/rfc7541>.
 
    [QPACK]    Krasic, C. '., Bishop, M., and A. Frindell, "QPACK: Header
               Compression for HTTP/3", Work in Progress, Internet-Draft,
@@ -683,11 +683,11 @@ Table of Contents
    [RFC2518]  Goland, Y., Whitehead, E., Faizi, A., Carter, S., and D.
               Jensen, "HTTP Extensions for Distributed Authoring --
               WEBDAV", RFC 2518, DOI 10.17487/RFC2518, February 1999,
-              <https://datatracker.ietf.org/doc/html/rfc2518>.
+              <https://www.rfc-editor.org/rfc/rfc2518>.
 
    [RFC8297]  Oku, K., "An HTTP Status Code for Indicating Hints",
               RFC 8297, DOI 10.17487/RFC8297, December 2017,
-              <https://datatracker.ietf.org/doc/html/rfc8297>.
+              <https://www.rfc-editor.org/rfc/rfc8297>.
 
 Acknowledgments
 

@@ -13,10 +13,10 @@ This allows a client to make multiple requests of a server without the server be
 to link those requests to the client or to identify the requests as having come
 from the same client. 
     " name="description">
-<meta content="xml2rfc 3.10.0" name="generator">
+<meta content="xml2rfc 3.11.1" name="generator">
 <meta content="draft-thomson-ohai-ohttp" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.10.0
+  xml2rfc 3.11.1
     Python 3.9.5
     appdirs 1.4.4
     ConfigArgParse 1.3
@@ -200,7 +200,8 @@ from the same client.
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-html {
+:root {
+  color-scheme: light dark;
   --background-color: #fff;
   --text-color: #222;
   --title-color: #191919;
@@ -210,6 +211,7 @@ html {
   --pilcrow-weak: #ddd;
   --pilcrow-strong: #bbb;
   --small-font-size: 14.5px;
+  --font-mono: 'Oxygen Mono', monospace;
   scrollbar-color: #bbb #eee;
 }
 body {
@@ -303,6 +305,10 @@ div {
 }
 svg {
   display: block;
+}
+/* font-family isn't space-separated, but =~ will have to do */
+svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
+  font-family: var(--font-mono);
 }
 .alignCenter.art-text {
   background-color: var(--highlight-color);
@@ -398,7 +404,7 @@ a.xref {
 /* Figures */
 tt, code, pre {
   background-color: var(--highlight-color);
-  font: 14px/22px 'Oxygen Mono', monospace;
+  font: 14px/22px var(--font-mono);
 }
 tt, code {
   /* changing the font for inline elements leads to different ascender
@@ -1004,7 +1010,7 @@ address div.right {
 
 /* Dark mode. */
 @media (prefers-color-scheme: dark) {
-html {
+:root {
   --background-color: #121212;
   --text-color: #f0f0f0;
   --title-color: #fff;
@@ -1037,11 +1043,11 @@ svg [stroke="fill"], svg [fill^="#fff"] {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">Oblivious HTTP</td>
-<td class="right">October 2021</td>
+<td class="right">November 2021</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Thomson &amp; Wood</td>
-<td class="center">Expires 28 April 2022</td>
+<td class="center">Expires 23 May 2022</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1054,12 +1060,12 @@ svg [stroke="fill"], svg [fill^="#fff"] {
 <dd class="internet-draft">draft-thomson-ohai-ohttp</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2021-10-25" class="published">25 October 2021</time>
+<time datetime="2021-11-19" class="published">19 November 2021</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2022-04-28">28 April 2022</time></dd>
+<dd class="expires"><time datetime="2022-05-23">23 May 2022</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1108,7 +1114,7 @@ from the same client.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 28 April 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 23 May 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1126,9 +1132,9 @@ from the same client.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
             publication of this document. Please review these documents
             carefully, as they describe your rights and restrictions with
             respect to this document. Code Components extracted from this
-            document must include Simplified BSD License text as described in
+            document must include Revised BSD License text as described in
             Section 4.e of the Trust Legal Provisions and are provided without
-            warranty as described in the Simplified BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="toc">
@@ -1380,41 +1386,41 @@ server.<a href="#section-3-3" class="pilcrow">¶</a></p>
 <figure id="figure-1">
         <div id="section-3-4.1">
           <div class="alignLeft art-svg artwork" id="section-3-4.1.1">
-<svg xmlns="http://www.w3.org/2000/svg" class="diagram" version="1.1" height="336" width="528" viewBox="0 0 528 336" text-anchor="middle" font-family="monospace" font-size="13px">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="336" width="528" viewBox="0 0 528 336" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px">
               <g transform="translate(8,16 )">
-                <path d="M 0,16 L 0,64" stroke="black"></path>
-                <path d="M 40,64 L 40,304" stroke="black"></path>
-                <path d="M 80,16 L 80,64" stroke="black"></path>
-                <path d="M 144,16 L 144,64" stroke="black"></path>
-                <path d="M 184,64 L 184,304" stroke="black"></path>
-                <path d="M 232,16 L 232,64" stroke="black"></path>
-                <path d="M 296,16 L 296,64" stroke="black"></path>
-                <path d="M 336,64 L 336,304" stroke="black"></path>
-                <path d="M 384,16 L 384,64" stroke="black"></path>
-                <path d="M 424,16 L 424,64" stroke="black"></path>
-                <path d="M 464,64 L 464,304" stroke="black"></path>
-                <path d="M 512,16 L 512,64" stroke="black"></path>
-                <path d="M 0,16 L 80,16" stroke="black"></path>
-                <path d="M 144,16 L 232,16" stroke="black"></path>
-                <path d="M 296,16 L 384,16" stroke="black"></path>
-                <path d="M 424,16 L 512,16" stroke="black"></path>
-                <path d="M 0,64 L 80,64" stroke="black"></path>
-                <path d="M 144,64 L 232,64" stroke="black"></path>
-                <path d="M 296,64 L 384,64" stroke="black"></path>
-                <path d="M 424,64 L 512,64" stroke="black"></path>
-                <path d="M 40,128 L 176,128" stroke="black"></path>
-                <path d="M 184,160 L 328,160" stroke="black"></path>
-                <path d="M 336,176 L 456,176" stroke="black"></path>
-                <path d="M 344,224 L 464,224" stroke="black"></path>
-                <path d="M 192,256 L 336,256" stroke="black"></path>
-                <path d="M 48,288 L 184,288" stroke="black"></path>
-                <polygon points="464,176 452,170.4 452,181.6" fill="black" transform="rotate(0,456,176 )"></polygon>
-                <polygon points="352,224 340,218.4 340,229.6" fill="black" transform="rotate(180,344,224 )"></polygon>
-                <polygon points="336,160 324,154.4 324,165.6" fill="black" transform="rotate(0,328,160 )"></polygon>
-                <polygon points="200,256 188,250.4 188,261.6" fill="black" transform="rotate(180,192,256 )"></polygon>
-                <polygon points="184,128 172,122.4 172,133.6" fill="black" transform="rotate(0,176,128 )"></polygon>
-                <polygon points="56,288 44,282.4 44,293.6" fill="black" transform="rotate(180,48,288 )"></polygon>
-                <g>
+                <path d="M 0,16 L 0,64" fill="none" stroke="black"></path>
+                <path d="M 40,64 L 40,304" fill="none" stroke="black"></path>
+                <path d="M 80,16 L 80,64" fill="none" stroke="black"></path>
+                <path d="M 144,16 L 144,64" fill="none" stroke="black"></path>
+                <path d="M 184,64 L 184,304" fill="none" stroke="black"></path>
+                <path d="M 232,16 L 232,64" fill="none" stroke="black"></path>
+                <path d="M 296,16 L 296,64" fill="none" stroke="black"></path>
+                <path d="M 336,64 L 336,304" fill="none" stroke="black"></path>
+                <path d="M 384,16 L 384,64" fill="none" stroke="black"></path>
+                <path d="M 424,16 L 424,64" fill="none" stroke="black"></path>
+                <path d="M 464,64 L 464,304" fill="none" stroke="black"></path>
+                <path d="M 512,16 L 512,64" fill="none" stroke="black"></path>
+                <path d="M 0,16 L 80,16" fill="none" stroke="black"></path>
+                <path d="M 144,16 L 232,16" fill="none" stroke="black"></path>
+                <path d="M 296,16 L 384,16" fill="none" stroke="black"></path>
+                <path d="M 424,16 L 512,16" fill="none" stroke="black"></path>
+                <path d="M 0,64 L 80,64" fill="none" stroke="black"></path>
+                <path d="M 144,64 L 232,64" fill="none" stroke="black"></path>
+                <path d="M 296,64 L 384,64" fill="none" stroke="black"></path>
+                <path d="M 424,64 L 512,64" fill="none" stroke="black"></path>
+                <path d="M 40,128 L 176,128" fill="none" stroke="black"></path>
+                <path d="M 184,160 L 328,160" fill="none" stroke="black"></path>
+                <path d="M 336,176 L 456,176" fill="none" stroke="black"></path>
+                <path d="M 344,224 L 464,224" fill="none" stroke="black"></path>
+                <path d="M 192,256 L 336,256" fill="none" stroke="black"></path>
+                <path d="M 48,288 L 184,288" fill="none" stroke="black"></path>
+                <polygon class="arrowhead" points="464,176 452,170.4 452,181.6" fill="black" transform="rotate(0,456,176 )"></polygon>
+                <polygon class="arrowhead" points="352,224 340,218.4 340,229.6" fill="black" transform="rotate(180,344,224 )"></polygon>
+                <polygon class="arrowhead" points="336,160 324,154.4 324,165.6" fill="black" transform="rotate(0,328,160 )"></polygon>
+                <polygon class="arrowhead" points="200,256 188,250.4 188,261.6" fill="black" transform="rotate(180,192,256 )"></polygon>
+                <polygon class="arrowhead" points="184,128 172,122.4 172,133.6" fill="black" transform="rotate(0,176,128 )"></polygon>
+                <polygon class="arrowhead" points="56,288 44,282.4 44,293.6" fill="black" transform="rotate(180,48,288 )"></polygon>
+                <g class="text">
                   <text x="36" y="36">Client</text>
                   <text x="176" y="36">Proxy</text>
                   <text x="336" y="36">Request</text>
@@ -1846,8 +1852,8 @@ b. If <code>kdfID</code> and <code>aeadID</code> identify a combination of KDF a
           <li id="section-5.1-9.2">Compute an HPKE context using <code>skR</code> and the encapsulated key <code>enc</code>,
 yielding <code>context</code>.<a href="#section-5.1-9.2" class="pilcrow">¶</a>
 </li>
-          <li id="section-5.1-9.3">Construct additional associated data, <code>aad</code>, from <code>keyID</code>, <code>kdfID</code>, and
-<code>aeadID</code> or as the first five bytes of <code>enc_request</code>.<a href="#section-5.1-9.3" class="pilcrow">¶</a>
+          <li id="section-5.1-9.3">Construct additional associated data, <code>aad</code>, from <code>keyID</code>, <code>kemID</code>, <code>kdfID</code>,
+and <code>aeadID</code> or as the first seven bytes of <code>enc_request</code>.<a href="#section-5.1-9.3" class="pilcrow">¶</a>
 </li>
           <li id="section-5.1-9.4">Decrypt <code>ct</code> using <code>aad</code> as associated data, yielding <code>request</code> or an error
 on failure. If decryption fails, the server returns an error.<a href="#section-5.1-9.4" class="pilcrow">¶</a>
@@ -2582,7 +2588,7 @@ information in <a href="#media-types" class="xref">Section 7</a> for the media t
 <dl class="references">
 <dt id="BINARY">[BINARY]</dt>
         <dd>
-<span class="refAuthor">Thomson, M.</span>, <span class="refTitle">"Binary Representation of HTTP Messages"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-thomson-http-binary-message</span>, <time datetime="2021-10-26" class="refDate">26 October 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-thomson-http-binary-message">https://datatracker.ietf.org/doc/html/draft-thomson-http-binary-message</a>&gt;</span>. </dd>
+<span class="refAuthor">Thomson, M.</span>, <span class="refTitle">"Binary Representation of HTTP Messages"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-thomson-http-binary-message</span>, <time datetime="2021-11-18" class="refDate">18 November 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-thomson-http-binary-message">https://datatracker.ietf.org/doc/html/draft-thomson-http-binary-message</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="HPKE">[HPKE]</dt>
         <dd>
@@ -2594,7 +2600,7 @@ information in <a href="#media-types" class="xref">Section 7</a> for the media t
 <dd class="break"></dd>
 <dt id="QUIC">[QUIC]</dt>
         <dd>
-<span class="refAuthor">Iyengar, J., Ed.</span> and <span class="refAuthor">M. Thomson, Ed.</span>, <span class="refTitle">"QUIC: A UDP-Based Multiplexed and Secure Transport"</span>, <span class="seriesInfo">RFC 9000</span>, <span class="seriesInfo">DOI 10.17487/RFC9000</span>, <time datetime="2021-05" class="refDate">May 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc9000">https://datatracker.ietf.org/doc/html/rfc9000</a>&gt;</span>. </dd>
+<span class="refAuthor">Iyengar, J., Ed.</span> and <span class="refAuthor">M. Thomson, Ed.</span>, <span class="refTitle">"QUIC: A UDP-Based Multiplexed and Secure Transport"</span>, <span class="seriesInfo">RFC 9000</span>, <span class="seriesInfo">DOI 10.17487/RFC9000</span>, <time datetime="2021-05" class="refDate">May 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9000">https://www.rfc-editor.org/rfc/rfc9000</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="QUIC-HTTP">[QUIC-HTTP]</dt>
         <dd>
@@ -2602,23 +2608,23 @@ information in <a href="#media-types" class="xref">Section 7</a> for the media t
 <dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
         <dd>
-<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc2119">https://datatracker.ietf.org/doc/html/rfc2119</a>&gt;</span>. </dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC7540">[RFC7540]</dt>
         <dd>
-<span class="refAuthor">Belshe, M.</span>, <span class="refAuthor">Peon, R.</span>, and <span class="refAuthor">M. Thomson, Ed.</span>, <span class="refTitle">"Hypertext Transfer Protocol Version 2 (HTTP/2)"</span>, <span class="seriesInfo">RFC 7540</span>, <span class="seriesInfo">DOI 10.17487/RFC7540</span>, <time datetime="2015-05" class="refDate">May 2015</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc7540">https://datatracker.ietf.org/doc/html/rfc7540</a>&gt;</span>. </dd>
+<span class="refAuthor">Belshe, M.</span>, <span class="refAuthor">Peon, R.</span>, and <span class="refAuthor">M. Thomson, Ed.</span>, <span class="refTitle">"Hypertext Transfer Protocol Version 2 (HTTP/2)"</span>, <span class="seriesInfo">RFC 7540</span>, <span class="seriesInfo">DOI 10.17487/RFC7540</span>, <time datetime="2015-05" class="refDate">May 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7540">https://www.rfc-editor.org/rfc/rfc7540</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
         <dd>
-<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc8174">https://datatracker.ietf.org/doc/html/rfc8174</a>&gt;</span>. </dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8470">[RFC8470]</dt>
         <dd>
-<span class="refAuthor">Thomson, M.</span>, <span class="refAuthor">Nottingham, M.</span>, and <span class="refAuthor">W. Tarreau</span>, <span class="refTitle">"Using Early Data in HTTP"</span>, <span class="seriesInfo">RFC 8470</span>, <span class="seriesInfo">DOI 10.17487/RFC8470</span>, <time datetime="2018-09" class="refDate">September 2018</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc8470">https://datatracker.ietf.org/doc/html/rfc8470</a>&gt;</span>. </dd>
+<span class="refAuthor">Thomson, M.</span>, <span class="refAuthor">Nottingham, M.</span>, and <span class="refAuthor">W. Tarreau</span>, <span class="refTitle">"Using Early Data in HTTP"</span>, <span class="seriesInfo">RFC 8470</span>, <span class="seriesInfo">DOI 10.17487/RFC8470</span>, <time datetime="2018-09" class="refDate">September 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8470">https://www.rfc-editor.org/rfc/rfc8470</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="TLS">[TLS]</dt>
       <dd>
-<span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3"</span>, <span class="seriesInfo">RFC 8446</span>, <span class="seriesInfo">DOI 10.17487/RFC8446</span>, <time datetime="2018-08" class="refDate">August 2018</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc8446">https://datatracker.ietf.org/doc/html/rfc8446</a>&gt;</span>. </dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3"</span>, <span class="seriesInfo">RFC 8446</span>, <span class="seriesInfo">DOI 10.17487/RFC8446</span>, <time datetime="2018-08" class="refDate">August 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8446">https://www.rfc-editor.org/rfc/rfc8446</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
@@ -2629,11 +2635,11 @@ information in <a href="#media-types" class="xref">Section 7</a> for the media t
 <dl class="references">
 <dt id="ALT-SVC">[ALT-SVC]</dt>
         <dd>
-<span class="refAuthor">Nottingham, M.</span>, <span class="refAuthor">McManus, P.</span>, and <span class="refAuthor">J. Reschke</span>, <span class="refTitle">"HTTP Alternative Services"</span>, <span class="seriesInfo">RFC 7838</span>, <span class="seriesInfo">DOI 10.17487/RFC7838</span>, <time datetime="2016-04" class="refDate">April 2016</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc7838">https://datatracker.ietf.org/doc/html/rfc7838</a>&gt;</span>. </dd>
+<span class="refAuthor">Nottingham, M.</span>, <span class="refAuthor">McManus, P.</span>, and <span class="refAuthor">J. Reschke</span>, <span class="refTitle">"HTTP Alternative Services"</span>, <span class="seriesInfo">RFC 7838</span>, <span class="seriesInfo">DOI 10.17487/RFC7838</span>, <time datetime="2016-04" class="refDate">April 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7838">https://www.rfc-editor.org/rfc/rfc7838</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="COOKIES">[COOKIES]</dt>
         <dd>
-<span class="refAuthor">Barth, A.</span>, <span class="refTitle">"HTTP State Management Mechanism"</span>, <span class="seriesInfo">RFC 6265</span>, <span class="seriesInfo">DOI 10.17487/RFC6265</span>, <time datetime="2011-04" class="refDate">April 2011</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc6265">https://datatracker.ietf.org/doc/html/rfc6265</a>&gt;</span>. </dd>
+<span class="refAuthor">Barth, A.</span>, <span class="refTitle">"HTTP State Management Mechanism"</span>, <span class="seriesInfo">RFC 6265</span>, <span class="seriesInfo">DOI 10.17487/RFC6265</span>, <time datetime="2011-04" class="refDate">April 2011</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6265">https://www.rfc-editor.org/rfc/rfc6265</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="Dingledine2004">[Dingledine2004]</dt>
         <dd>
@@ -2641,7 +2647,7 @@ information in <a href="#media-types" class="xref">Section 7</a> for the media t
 <dd class="break"></dd>
 <dt id="FORWARDED">[FORWARDED]</dt>
         <dd>
-<span class="refAuthor">Petersson, A.</span> and <span class="refAuthor">M. Nilsson</span>, <span class="refTitle">"Forwarded HTTP Extension"</span>, <span class="seriesInfo">RFC 7239</span>, <span class="seriesInfo">DOI 10.17487/RFC7239</span>, <time datetime="2014-06" class="refDate">June 2014</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc7239">https://datatracker.ietf.org/doc/html/rfc7239</a>&gt;</span>. </dd>
+<span class="refAuthor">Petersson, A.</span> and <span class="refAuthor">M. Nilsson</span>, <span class="refTitle">"Forwarded HTTP Extension"</span>, <span class="seriesInfo">RFC 7239</span>, <span class="seriesInfo">DOI 10.17487/RFC7239</span>, <time datetime="2014-06" class="refDate">June 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7239">https://www.rfc-editor.org/rfc/rfc7239</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="ODoH">[ODoH]</dt>
         <dd>
@@ -2661,19 +2667,19 @@ information in <a href="#media-types" class="xref">Section 7</a> for the media t
 <dd class="break"></dd>
 <dt id="RANDOM">[RANDOM]</dt>
         <dd>
-<span class="refAuthor">Eastlake 3rd, D.</span>, <span class="refAuthor">Schiller, J.</span>, and <span class="refAuthor">S. Crocker</span>, <span class="refTitle">"Randomness Requirements for Security"</span>, <span class="seriesInfo">BCP 106</span>, <span class="seriesInfo">RFC 4086</span>, <span class="seriesInfo">DOI 10.17487/RFC4086</span>, <time datetime="2005-06" class="refDate">June 2005</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc4086">https://datatracker.ietf.org/doc/html/rfc4086</a>&gt;</span>. </dd>
+<span class="refAuthor">Eastlake 3rd, D.</span>, <span class="refAuthor">Schiller, J.</span>, and <span class="refAuthor">S. Crocker</span>, <span class="refTitle">"Randomness Requirements for Security"</span>, <span class="seriesInfo">BCP 106</span>, <span class="seriesInfo">RFC 4086</span>, <span class="seriesInfo">DOI 10.17487/RFC4086</span>, <time datetime="2005-06" class="refDate">June 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4086">https://www.rfc-editor.org/rfc/rfc4086</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC6265">[RFC6265]</dt>
         <dd>
-<span class="refAuthor">Barth, A.</span>, <span class="refTitle">"HTTP State Management Mechanism"</span>, <span class="seriesInfo">RFC 6265</span>, <span class="seriesInfo">DOI 10.17487/RFC6265</span>, <time datetime="2011-04" class="refDate">April 2011</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc6265">https://datatracker.ietf.org/doc/html/rfc6265</a>&gt;</span>. </dd>
+<span class="refAuthor">Barth, A.</span>, <span class="refTitle">"HTTP State Management Mechanism"</span>, <span class="seriesInfo">RFC 6265</span>, <span class="seriesInfo">DOI 10.17487/RFC6265</span>, <time datetime="2011-04" class="refDate">April 2011</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6265">https://www.rfc-editor.org/rfc/rfc6265</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC7838">[RFC7838]</dt>
         <dd>
-<span class="refAuthor">Nottingham, M.</span>, <span class="refAuthor">McManus, P.</span>, and <span class="refAuthor">J. Reschke</span>, <span class="refTitle">"HTTP Alternative Services"</span>, <span class="seriesInfo">RFC 7838</span>, <span class="seriesInfo">DOI 10.17487/RFC7838</span>, <time datetime="2016-04" class="refDate">April 2016</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc7838">https://datatracker.ietf.org/doc/html/rfc7838</a>&gt;</span>. </dd>
+<span class="refAuthor">Nottingham, M.</span>, <span class="refAuthor">McManus, P.</span>, and <span class="refAuthor">J. Reschke</span>, <span class="refTitle">"HTTP Alternative Services"</span>, <span class="seriesInfo">RFC 7838</span>, <span class="seriesInfo">DOI 10.17487/RFC7838</span>, <time datetime="2016-04" class="refDate">April 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7838">https://www.rfc-editor.org/rfc/rfc7838</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="X25519">[X25519]</dt>
       <dd>
-<span class="refAuthor">Langley, A.</span>, <span class="refAuthor">Hamburg, M.</span>, and <span class="refAuthor">S. Turner</span>, <span class="refTitle">"Elliptic Curves for Security"</span>, <span class="seriesInfo">RFC 7748</span>, <span class="seriesInfo">DOI 10.17487/RFC7748</span>, <time datetime="2016-01" class="refDate">January 2016</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc7748">https://datatracker.ietf.org/doc/html/rfc7748</a>&gt;</span>. </dd>
+<span class="refAuthor">Langley, A.</span>, <span class="refAuthor">Hamburg, M.</span>, and <span class="refAuthor">S. Turner</span>, <span class="refTitle">"Elliptic Curves for Security"</span>, <span class="seriesInfo">RFC 7748</span>, <span class="seriesInfo">DOI 10.17487/RFC7748</span>, <time datetime="2016-01" class="refDate">January 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7748">https://www.rfc-editor.org/rfc/rfc7748</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
