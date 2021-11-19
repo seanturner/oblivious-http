@@ -1852,8 +1852,8 @@ b. If <code>kdfID</code> and <code>aeadID</code> identify a combination of KDF a
           <li id="section-5.1-9.2">Compute an HPKE context using <code>skR</code> and the encapsulated key <code>enc</code>,
 yielding <code>context</code>.<a href="#section-5.1-9.2" class="pilcrow">¶</a>
 </li>
-          <li id="section-5.1-9.3">Construct additional associated data, <code>aad</code>, from <code>keyID</code>, <code>kdfID</code>, and
-<code>aeadID</code> or as the first seven bytes of <code>enc_request</code>.<a href="#section-5.1-9.3" class="pilcrow">¶</a>
+          <li id="section-5.1-9.3">Construct additional associated data, <code>aad</code>, from <code>keyID</code>, <code>kemID</code>, <code>kdfID</code>,
+and <code>aeadID</code> or as the first seven bytes of <code>enc_request</code>.<a href="#section-5.1-9.3" class="pilcrow">¶</a>
 </li>
           <li id="section-5.1-9.4">Decrypt <code>ct</code> using <code>aad</code> as associated data, yielding <code>request</code> or an error
 on failure. If decryption fails, the server returns an error.<a href="#section-5.1-9.4" class="pilcrow">¶</a>
