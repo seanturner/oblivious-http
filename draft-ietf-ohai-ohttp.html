@@ -1706,33 +1706,17 @@ Change controller:  </dt>
       <h2 id="name-hpke-encapsulation">
 <a href="#section-5" class="section-number selfRef">5. </a><a href="#name-hpke-encapsulation" class="section-name selfRef">HPKE Encapsulation</a>
       </h2>
-<p id="section-5-1">HTTP message encapsulation uses HPKE for request and response encryption.
-An encapsulated HTTP message includes the following values:<a href="#section-5-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-5-2">
-<li id="section-5-2.1">A binary-encoded HTTP message; see <span>[<a href="#BINARY" class="xref">BINARY</a>]</span>.<a href="#section-5-2.1" class="pilcrow">¶</a>
-</li>
-        <li id="section-5-2.2">Padding of arbitrary length which MUST contain all zeroes.<a href="#section-5-2.2" class="pilcrow">¶</a>
-</li>
-      </ol>
-<p id="section-5-3">The encoding of an HTTP message is as follows:<a href="#section-5-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-5-4">
-<pre>
-Plaintext Message {
-  Message Length (i),
-  Message (..),
-  Padding Length (i),
-  Padding (..),
-}
-</pre><a href="#section-5-4" class="pilcrow">¶</a>
-</div>
-<p id="section-5-5">An Encapsulated Request is comprised of a length-prefixed key identifier and a
+<p id="section-5-1">HTTP message encapsulation uses HPKE for request and response encryption.  An
+encapsulated HTTP message includes a binary-encoded HTTP message and no other
+content; see <span>[<a href="#BINARY" class="xref">BINARY</a>]</span>.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">An Encapsulated Request is comprised of a length-prefixed key identifier and a
 HPKE-protected request message. HPKE protection includes an encapsulated KEM
 shared secret (or <code>enc</code>), plus the AEAD-protected request message. An
 Encapsulated Request is shown in <a href="#fig-enc-request" class="xref">Figure 3</a>. <a href="#request" class="xref">Section 5.1</a> describes the
-process for constructing and processing an Encapsulated Request.<a href="#section-5-5" class="pilcrow">¶</a></p>
+process for constructing and processing an Encapsulated Request.<a href="#section-5-2" class="pilcrow">¶</a></p>
 <span id="name-encapsulated-request"></span><div id="fig-enc-request">
 <figure id="figure-3">
-        <div class="alignLeft art-text artwork" id="section-5-6.1">
+        <div class="alignLeft art-text artwork" id="section-5-3.1">
 <pre>
 Encapsulated Request {
   Key Identifier (8),
@@ -1748,13 +1732,13 @@ Encapsulated Request {
 <a href="#name-encapsulated-request" class="selfRef">Encapsulated Request</a>
         </figcaption></figure>
 </div>
-<p id="section-5-7">The Nenc parameter corresponding to the HpkeKdfId can be found in <span>[<a href="#HPKE" class="xref">HPKE</a>]</span>.<a href="#section-5-7" class="pilcrow">¶</a></p>
-<p id="section-5-8">Responses are bound to responses and so consist only of AEAD-protected content.
+<p id="section-5-4">The Nenc parameter corresponding to the HpkeKdfId can be found in <span>[<a href="#HPKE" class="xref">HPKE</a>]</span>.<a href="#section-5-4" class="pilcrow">¶</a></p>
+<p id="section-5-5">Responses are bound to responses and so consist only of AEAD-protected content.
 <a href="#response" class="xref">Section 5.2</a> describes the process for constructing and processing an
-Encapsulated Response.<a href="#section-5-8" class="pilcrow">¶</a></p>
+Encapsulated Response.<a href="#section-5-5" class="pilcrow">¶</a></p>
 <span id="name-encapsulated-response"></span><div id="fig-enc-response">
 <figure id="figure-4">
-        <div class="alignLeft art-text artwork" id="section-5-9.1">
+        <div class="alignLeft art-text artwork" id="section-5-6.1">
 <pre>
 Encapsulated Response {
   Nonce (Nk),
@@ -1766,8 +1750,8 @@ Encapsulated Response {
 <a href="#name-encapsulated-response" class="selfRef">Encapsulated Response</a>
         </figcaption></figure>
 </div>
-<p id="section-5-10">The size of the Nonce field in an Encapsulated Response corresponds to the
-size of an AEAD key for the corresponding HPKE ciphersuite.<a href="#section-5-10" class="pilcrow">¶</a></p>
+<p id="section-5-7">The size of the Nonce field in an Encapsulated Response corresponds to the
+size of an AEAD key for the corresponding HPKE ciphersuite.<a href="#section-5-7" class="pilcrow">¶</a></p>
 <div id="request">
 <section id="section-5.1">
         <h3 id="name-encapsulation-of-requests">
@@ -2397,7 +2381,8 @@ forwarded by the proxy.<a href="#section-8.2.2-1" class="pilcrow">¶</a></p>
 anonymity set into which each message is attributed. This could latency to the
 overall time clients take to receive a response, which might not be what some
 clients want.<a href="#section-8.2.2-2" class="pilcrow">¶</a></p>
-<p id="section-8.2.2-3">A proxy can use padding to reduce the effectiveness of traffic analysis.<a href="#section-8.2.2-3" class="pilcrow">¶</a></p>
+<p id="section-8.2.2-3">A proxy can use padding to reduce the effectiveness of traffic analysis.
+Padding is a capability provided by binary HTTP messages; see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-binary-message-00#section-3.8" class="relref">Section 3.8</a> of [<a href="#BINARY" class="xref">BINARY</a>]</span>.<a href="#section-8.2.2-3" class="pilcrow">¶</a></p>
 <p id="section-8.2.2-4">A proxy that forwards large volumes of exchanges can provide better privacy by
 providing larger sets of messages that need to be matched.<a href="#section-8.2.2-4" class="pilcrow">¶</a></p>
 </section>
