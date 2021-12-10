@@ -1104,11 +1104,11 @@ Table of Contents
 
 12.1.  Normative References
 
-   [BINARY]   Thomson, M., "Binary Representation of HTTP Messages",
-              Work in Progress, Internet-Draft, draft-thomson-http-
-              binary-message-latest, 9 December 2021,
-              <https://datatracker.ietf.org/doc/html/draft-thomson-http-
-              binary-message-latest>.
+   [BINARY]   Thomson, M. and C. A. Wood, "Binary Representation of HTTP
+              Messages", Work in Progress, Internet-Draft, draft-ietf-
+              httpbis-binary-message-00, 23 November 2021,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-
+              binary-message-00>.
 
    [HPKE]     Barnes, R. L., Bhargavan, K., Lipp, B., and C. A. Wood,
               "Hybrid Public Key Encryption", Work in Progress,
