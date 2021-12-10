@@ -2,11 +2,11 @@
 
 
 
-HTTPBIS                                                       M. Thomson
+Oblivious HTTP Application Intermediation                     M. Thomson
 Internet-Draft                                                   Mozilla
 Intended status: Standards Track                               C.A. Wood
-Expires: 29 May 2022                                          Cloudflare
-                                                        25 November 2021
+Expires: 13 June 2022                                         Cloudflare
+                                                        10 December 2021
 
 
                              Oblivious HTTP
@@ -19,12 +19,22 @@ Abstract
    without the server being able to link those requests to the client or
    to identify the requests as having come from the same client.
 
-Discussion Venues
+About This Document
 
    This note is to be removed before publishing as an RFC.
 
+   The latest revision of this draft can be found at https://ietf-wg-
+   ohai.github.io/oblivious-http/draft-ietf-ohai-ohttp.html.  Status
+   information for this document may be found at
+   https://datatracker.ietf.org/doc/draft-ietf-ohai-ohttp/.
+
+   Discussion of this document takes place on the Oblivious HTTP
+   Application Intermediation Working Group mailing list
+   (mailto:ohai@ietf.org), which is archived at
+   https://mailarchive.ietf.org/arch/browse/ohai/.
+
    Source for this draft and an issue tracker can be found at
-   https://github.com/unicorn-wg/oblivious-http.
+   https://github.com/ietf-wg-ohai/oblivious-http.
 
 Status of This Memo
 
@@ -41,7 +51,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 29 May 2022.
+   This Internet-Draft will expire on 13 June 2022.
 
 Copyright Notice
 
@@ -1096,7 +1106,7 @@ Table of Contents
 
    [BINARY]   Thomson, M., "Binary Representation of HTTP Messages",
               Work in Progress, Internet-Draft, draft-thomson-http-
-              binary-message-latest, 26 November 2021,
+              binary-message-latest, 9 December 2021,
               <https://datatracker.ietf.org/doc/html/draft-thomson-http-
               binary-message-latest>.
 
@@ -1176,9 +1186,9 @@ Table of Contents
 
    [ODOH]     Kinnear, E., McManus, P., Pauly, T., Verma, T., and C. A.
               Wood, "Oblivious DNS Over HTTPS", Work in Progress,
-              Internet-Draft, draft-pauly-dprive-oblivious-doh-07, 2
-              September 2021, <https://datatracker.ietf.org/doc/html/
-              draft-pauly-dprive-oblivious-doh-07>.
+              Internet-Draft, draft-pauly-dprive-oblivious-doh-08, 3
+              December 2021, <https://datatracker.ietf.org/doc/html/
+              draft-pauly-dprive-oblivious-doh-08>.
 
    [OHTTP-ANALYSIS]
               Hoyland, J., "Tamarin Model of Oblivious HTTP", 23 August
