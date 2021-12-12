@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-11-30T00:18:55.255422+00:00",
+  "timestamp": "2021-12-12T00:20:39.291764+00:00",
   "repo": "ietf-wg-ohai/oblivious-http",
   "labels": [
     {
@@ -1072,6 +1072,22 @@
       "body": "I recognize that #42 / #44 added some conditions and use cases, but it would help readers like me to have even more. A separate explainer document/readme would be fine too.\r\n\r\nIn the meeting chat today, I heard the suggestion of requesting map tiles as another use case, which makes sense to me: asking for map tiles is itself pretty revealing if connected to the user's identity (it might reveal your current location, or a location where you're going to be) and can be pretty transactional/stateless. Maybe search queries are similar. Safe browsing lookups was also mentioned.\r\n\r\nHaving more example use cases might help in resolving other questions, like whether to support multiple HTTP requests at a time, or non-HTTP message bodies, etc. Ideally, we could explain the conditions under which adoption of ohttp will be useful -- maybe, a privacy need for reducing linkability of multiple requests or of a single request from user identity, and HTTP requests that are typically stateless or single-shot in some way, and frequent or performant-requiring at a certain level.",
       "createdAt": "2021-11-08T21:06:05Z",
       "updatedAt": "2021-11-08T21:06:05Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 85,
+      "id": "I_kwDOE6fLGM5AMWTW",
+      "title": "Pin encapsulation type to message/bhttp",
+      "url": "https://github.com/ietf-wg-ohai/oblivious-http/issues/85",
+      "state": "OPEN",
+      "author": "chris-wood",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "With #83, we're enforcing a 1:1 mapping between message/ohttp-req and message/bhttp, but we don't have any cryptographic enforcement of this pairing. If someone were to reuse the encapsulation mechanism in this document with another message type, say, to encapsulate application/dns-message values with a application/oblivious-dns-message wrapper, then we'd probably want to ensure that targets can't get confused between these two types. We could use the HPKE info string to separate these two protocols. (This is related to #54.)",
+      "createdAt": "2021-12-10T15:43:16Z",
+      "updatedAt": "2021-12-10T15:54:36Z",
       "closedAt": null,
       "comments": []
     }
@@ -4348,6 +4364,222 @@
           "body": "",
           "createdAt": "2021-11-19T00:53:15Z",
           "updatedAt": "2021-11-19T00:53:15Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 81,
+      "id": "PR_kwDOE6fLGM4vpMYU",
+      "title": "Update README",
+      "url": "https://github.com/ietf-wg-ohai/oblivious-http/pull/81",
+      "state": "MERGED",
+      "author": "martinthomson",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "As long as I can't push directly, here's a pull request.",
+      "createdAt": "2021-12-09T22:49:21Z",
+      "updatedAt": "2021-12-10T01:13:56Z",
+      "baseRepository": "ietf-wg-ohai/oblivious-http",
+      "baseRefName": "main",
+      "baseRefOid": "98c6a2a82036bdcbca004fa8dabbd26cc735ad6e",
+      "headRepository": "martinthomson/oblivious-http",
+      "headRefName": "readme",
+      "headRefOid": "999d41e92911700a17dc4c0696876f11959fe78f",
+      "closedAt": "2021-12-10T00:07:59Z",
+      "mergedAt": "2021-12-10T00:07:59Z",
+      "mergedBy": "chris-wood",
+      "mergeCommit": {
+        "oid": "47d3738b59169d4255ca7e7b97b46002a3a5d7ff"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOE6fLGM4xXzBM",
+          "commit": {
+            "abbreviatedOid": "999d41e"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-12-10T00:07:54Z",
+          "updatedAt": "2021-12-10T00:07:54Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 82,
+      "id": "PR_kwDOE6fLGM4vpiH6",
+      "title": "Automatic update of venue information",
+      "url": "https://github.com/ietf-wg-ohai/oblivious-http/pull/82",
+      "state": "MERGED",
+      "author": "martinthomson",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fix the area and workgroup pieces (which I neglected before) and use the new feature.",
+      "createdAt": "2021-12-10T01:06:31Z",
+      "updatedAt": "2021-12-10T01:08:16Z",
+      "baseRepository": "ietf-wg-ohai/oblivious-http",
+      "baseRefName": "main",
+      "baseRefOid": "47d3738b59169d4255ca7e7b97b46002a3a5d7ff",
+      "headRepository": "martinthomson/oblivious-http",
+      "headRefName": "venue",
+      "headRefOid": "147daeb7678140d14ceccf4d2b76640764510c11",
+      "closedAt": "2021-12-10T01:08:16Z",
+      "mergedAt": "2021-12-10T01:08:16Z",
+      "mergedBy": "chris-wood",
+      "mergeCommit": {
+        "oid": "e158c434f1c240907cab541b405c7493c69c2d98"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOE6fLGM4xX6Hw",
+          "commit": {
+            "abbreviatedOid": "147daeb"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-12-10T01:08:12Z",
+          "updatedAt": "2021-12-10T01:08:12Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 83,
+      "id": "PR_kwDOE6fLGM4vpkF2",
+      "title": "Move padding to binary HTTP messages",
+      "url": "https://github.com/ietf-wg-ohai/oblivious-http/pull/83",
+      "state": "MERGED",
+      "author": "martinthomson",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "See discussion on-list.",
+      "createdAt": "2021-12-10T01:12:08Z",
+      "updatedAt": "2021-12-10T15:43:28Z",
+      "baseRepository": "ietf-wg-ohai/oblivious-http",
+      "baseRefName": "main",
+      "baseRefOid": "e158c434f1c240907cab541b405c7493c69c2d98",
+      "headRepository": "martinthomson/oblivious-http",
+      "headRefName": "remove-padding",
+      "headRefOid": "6f377e7f91a7444dbc3d2b83d57d183e57ff9079",
+      "closedAt": "2021-12-10T15:43:28Z",
+      "mergedAt": "2021-12-10T15:43:28Z",
+      "mergedBy": "chris-wood",
+      "mergeCommit": {
+        "oid": "1c49ebaff93d1f9f7aa96b8fd051b5356629e025"
+      },
+      "comments": [
+        {
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "See also https://github.com/httpwg/http-extensions/pull/1832",
+          "createdAt": "2021-12-10T01:12:28Z",
+          "updatedAt": "2021-12-10T01:12:28Z"
+        },
+        {
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "body": "If we're pinning the contents of the encapsulation to message/bhttp, it seems like we also ought to change the HPKE info strings to match (\"request\" -> \"message/bhttp-request\" or whatever). When someone tries to reuse this layer of encapsulation, I think they ought to change the info string accordingly to match whatever the underlying type is. And it might not hurt to add guidance to such people in the security considerations. Can we do this in a followup PR?",
+          "createdAt": "2021-12-10T15:00:57Z",
+          "updatedAt": "2021-12-10T15:00:57Z"
+        },
+        {
+          "author": "tfpauly",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I agree that we should think about content types a bit more, but that seems appropriate for another PR. ",
+          "createdAt": "2021-12-10T15:13:10Z",
+          "updatedAt": "2021-12-10T15:13:10Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOE6fLGM4xYUEP",
+          "commit": {
+            "abbreviatedOid": "6f377e7"
+          },
+          "author": "tfpauly",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-12-10T05:49:21Z",
+          "updatedAt": "2021-12-10T05:49:21Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOE6fLGM4xahOm",
+          "commit": {
+            "abbreviatedOid": "6f377e7"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-12-10T15:37:25Z",
+          "updatedAt": "2021-12-10T15:37:25Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 84,
+      "id": "PR_kwDOE6fLGM4vpmD0",
+      "title": "Use the published binary HTTP version",
+      "url": "https://github.com/ietf-wg-ohai/oblivious-http/pull/84",
+      "state": "MERGED",
+      "author": "martinthomson",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This makes the whole `{::date}` thing unnecessary as well.",
+      "createdAt": "2021-12-10T01:17:45Z",
+      "updatedAt": "2021-12-10T14:58:20Z",
+      "baseRepository": "ietf-wg-ohai/oblivious-http",
+      "baseRefName": "main",
+      "baseRefOid": "e158c434f1c240907cab541b405c7493c69c2d98",
+      "headRepository": "martinthomson/oblivious-http",
+      "headRefName": "bhttp-ref",
+      "headRefOid": "e1a9b01ea0f5adf463cfb67054ce595789a15b05",
+      "closedAt": "2021-12-10T14:58:20Z",
+      "mergedAt": "2021-12-10T14:58:20Z",
+      "mergedBy": "chris-wood",
+      "mergeCommit": {
+        "oid": "e0d9d74bac69cc225aae0ce24a79acd626b0b678"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOE6fLGM4xYUGo",
+          "commit": {
+            "abbreviatedOid": "e1a9b01"
+          },
+          "author": "tfpauly",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-12-10T05:49:43Z",
+          "updatedAt": "2021-12-10T05:49:43Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOE6fLGM4xaWAu",
+          "commit": {
+            "abbreviatedOid": "e1a9b01"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-12-10T14:58:16Z",
+          "updatedAt": "2021-12-10T14:58:16Z",
           "comments": []
         }
       ]
