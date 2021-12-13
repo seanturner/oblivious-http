@@ -5,8 +5,8 @@
 Oblivious HTTP Application Intermediation                     M. Thomson
 Internet-Draft                                                   Mozilla
 Intended status: Standards Track                               C.A. Wood
-Expires: 13 June 2022                                         Cloudflare
-                                                        10 December 2021
+Expires: 16 June 2022                                         Cloudflare
+                                                        13 December 2021
 
 
                              Oblivious HTTP
@@ -51,7 +51,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 13 June 2022.
+   This Internet-Draft will expire on 16 June 2022.
 
 Copyright Notice
 
@@ -440,9 +440,6 @@ Table of Contents
 
                        Figure 3: Encapsulated Request
 
-   The Nenc parameter corresponding to the HpkeKdfId can be found in
-   [HPKE].
-
    Responses are bound to responses and so consist only of AEAD-
    protected content.  Section 5.2 describes the process for
    constructing and processing an Encapsulated Response.
@@ -454,8 +451,10 @@ Table of Contents
 
                       Figure 4: Encapsulated Response
 
-   The size of the Nonce field in an Encapsulated Response corresponds
-   to the size of an AEAD key for the corresponding HPKE ciphersuite.
+   The Nenc and Nk parameters corresponding to the HpkeKdfId can be
+   found in [HPKE].  Nenc refers to the size of the encapsulated KEM
+   shared secret, in bytes; Nk refers to the size of the AEAD key for
+   the HPKE ciphersuite, in bits.
 
 5.1.  Encapsulation of Requests
 
