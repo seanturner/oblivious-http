@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-12-12T00:20:39.291764+00:00",
+  "timestamp": "2021-12-14T00:19:48.805755+00:00",
   "repo": "ietf-wg-ohai/oblivious-http",
   "labels": [
     {
@@ -995,14 +995,71 @@
       "url": "https://github.com/ietf-wg-ohai/oblivious-http/issues/76",
       "state": "OPEN",
       "author": "martinthomson",
-      "authorAssociation": "CONTRIBUTOR",
+      "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "The current design doesn't add any data to requests, so servers are only able to provide anti-replay based on what they see: the encapsulation and the content of the HTTP request.\r\n\r\nOne common factor in anti-replay designs is time.  It is easier to apply anti-replay protections for timestamped requests as any state can be bounded in time: requests are rejected as being a replay if they fall outside a small time window.  Should we include a timestamp in requests?  Or, should we merely insist on the Date header field being present?  It is somewhat [unusual](https://httpwg.org/http-core/draft-ietf-httpbis-semantics-latest.html#rfc.section.6.6.1.p.10) for Date to be present on requests, but it is permitted.\r\n\r\nThe other thing to consider is clock drift.  TLS uses an anti-replay design that uses relative times, which means that only relative clock drift over a short time needs to be accounted for.  Here, we have no prior synchronization, so we are forced to use absolute times.  That likely means a greater allowance for clock drift.\r\n\r\nIt also likely means that we need to include a new signal to clients for when their time is so badly off that their requests are being rejected.  Experience shows that client clocks are terrifically bad, but given prompting they might be able to adjust to match the server clock.  We need to be *very* careful to ensure that this sort of signal is properly authenticated, so that if clients do retry requests, they aren't subject to attacks that might cause them to be complicit in generating a replay attack.\r\n\r\nWe might also consider a nonce or other anti-replay measures, but as clients are required to perform a new encapsulation for every request, the `enc` value can be used.\r\n\r\n(This issue is split from #70.)",
       "createdAt": "2021-10-26T00:14:59Z",
-      "updatedAt": "2021-10-26T00:14:59Z",
+      "updatedAt": "2021-12-14T00:13:17Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "martinthomson",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The most obvious mechanism here for protecting against anti-replay is a timestamp in combination with a per-entry nonce.\r\n\r\nThere are a few things to consider when deciding on how to encode the time.\r\n\r\n### Encrypted Timestamp\r\n\r\nThe first question is whether to encrypt the timestamp or not.  An encrypted timestamp would result in servers spending the cycles necessary to decrypt a request before they can be sure if it is a replay.  Each server will maintain nonces over a certain time window and discard requests that are fall outside this span (either earlier or later).\r\n\r\nAn encrypted timestamp means that a server can still use the nonce to determine if a request is a replay before decrypting.  However, requests from outside the time window will need to be decrypted to determine that they should be discarded.  This is more work.\r\n\r\nHowever, we should assume that - under normal operation - replays will be rare.  Clock skew is the obvious cause for a request falling outside of the time window that a server is tracking.  However, that only really points to a need for having a wider time window or feedback that allows client time to be corrected.  It's only the DoS cost that might play into a choice to avoid the extra computation cost.\r\n\r\nValidation of an HPKE-encrypted message is only possible after performing lots of work.  For an attacker looking to exhaust server computation resources, it is possible to just send a server complete garbage.  The server only learns that the message was garbage after performing an expensive key exchange and decryption.  A timestamp on the outside of the message doesn't save this, as this can be set to whatever value best suits the attacker.\r\n\r\nThat all leads me to suggest that including the timestamp under encryption is probably the best choice.\r\n\r\nAlso, if we want to provide an authenticated signal for clock skew errors, it will be easier to have the timestamp under protection.  Then, when the timestamp falls outside of the server time window, the server can generate an authenticated response.\r\n\r\n### Resolution\r\n\r\nUsing `enc` for the nonce part gives us a very high entropy value with very low collision probability.  That allows us to use a timestamp that is quite coarse.  The only reason we would want to increase clock resolution is so that servers can manage narrow anti-replay windows.\r\n\r\nBecause we are operating in near-real time, anti-replay windows need to be wide enough to allow for clock skew and not a lot else.  How much tolerance for clock skew we need will depend on whether we have good correction mechanisms in place.\r\n\r\nA coarser clock forces a server to maintain state for a slightly wider window, to allow for the requests within their target window to be adjusted by the coarseness of the clock.  For instance, if the desired window is 10 minutes and the clock resolution is 1 day, then the window is expanded to 2 days.  Thus, we should not reduce resolution too much.\r\n\r\nProvided that it is not too coarse, a coarse value reveals less about the clock of the client.  Though we cannot stop some information about the client clock from leaking, less information is better.  Note that we don't have to worry so much about values crossing thresholds (e.g., from one day to the next if the resolution is 1 day), as the server cannot link requests from the same client to use information about when it crosses that threshold.\r\n\r\nThis isn't that much value as clients are able to randomize their clock to obscure the true value.  This is likely to be very effective as a privacy protection as each request is handled in isolation.\r\n\r\n### Range\r\n\r\nIt must be possible to unambiguously represent any time in the period over which a server public key is valid.\r\n\r\nIf the range of possible timestamp values is shorter than the lifetime of a key, the same timestamp value might identify multiple times in the lifetime of that key.\r\n\r\nA 32-bit value in seconds covers 136 years.  If we take the low 32-bits of the current time in seconds, then a timestamp will be valid for multiple times 136 years apart.  That's probably long enough that a server should have replaced its public key.\r\n\r\nGiven what we know about public key usage in other contexts, it's probably wise to cover a period of multiple years.\r\n\r\n### Conclusion\r\n\r\nA 32-bit value in seconds is clearly good.  Clock skew in the order of a second is extremely common, so this doesn't significantly increase the state a server needs to maintain.\r\n\r\nIf we were to reduce the size to the next threshold and choose 24 bits, seconds doesn't work as that gives a range of only half a year.\r\n\r\nWe can expand that 32 times (i.e., 17 years) by shifting by 5 bits and having a resolution of 32 seconds.  That seems like a poor trade.  That's enough for anti-replay (17 years is far too long to hold onto the same key), but the shift by 5 is annoying to implement, and the space savings are hardly significant.  It also forces servers to keep state for a minimum period of 64 seconds, which is at the point that it could be longer than some servers would otherwise need to hold anti-replay state.  The only benefit is the reduction in timer resolution from clients.\r\n\r\nThe 32-bit value seems like the best answer.  It's simple and effective.  We can pack that in ahead of the request message and encrypt it.",
+          "createdAt": "2021-12-13T06:09:23Z",
+          "updatedAt": "2021-12-13T06:09:23Z"
+        },
+        {
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I agree with the conclusion to encrypt the timestamp (proxies don't really need it and it's very little extra work) and on the resolution (clients that want to hide information can mask out the lower bits), but not quite on the range. In particular:\r\n\r\n> It must be possible to unambiguously represent any time in the period over which a server public key is valid.\r\n\r\n\ud83d\udc4d given a validity window of length broken up into two windows represented by the same timestamp range, we don't want a replay from the first window to be valid in the second window.\r\n\r\n> Given what we know about public key usage in other contexts, it's probably wise to cover a period of multiple years.\r\n\r\n\ud83d\udc4e This is where I think we diverge. This seems to encourage poor key management practices. I'd prefer the spec take a stricter stance on this, and 24 bits seems like it would be quite reasonable in this regard. \r\n\r\nServers can make sensible choices about what state their willing to store based on anticipated clock skew in honest clients, but the spec ultimately needs to be robust against malicious clients replaying messages at arbitrary points in the future within the validity window of a public key. At the end of the day, this seems to boil down to how long we want or expect keys to be valid, and I'm just not comfortable with allowances for extremely long windows. ",
+          "createdAt": "2021-12-13T15:01:48Z",
+          "updatedAt": "2021-12-13T15:11:20Z"
+        },
+        {
+          "author": "ekr",
+          "authorAssociation": "NONE",
+          "body": "Before designing a system, I think we should start by asking the threshold question of whether we need anti-replay at all.\r\n\r\nFirst, there are a number of systems which simply don't need it: anything that's idempotent on the server doesn't need replay detection. Even systems which are not idempotent quite likely have their own anti-replay mechanisms in order to deal with application-level replay conditions. For instance suppose that you have a telemetry or crash reporting system: you want it to be robust to transport-level failures which means that you keep retrying in the face of those failures. But the HTTP anti-replay mechanisms are at the TLS layer and so you also need application layer anti-replay.\r\n\r\nFinally, even if we *do* have an anti-replay mechanism at this layer, it's not going to be effective unless we provide strict application guidance. For instance, suppose that the proxy collects the client's message and then generates a transport error to force a replay at the client. If the client generates a new transaction (not unreasonable) then this won't trigger the anti-replay defenses. And of course if the client just re-sends the same message then the proxy learns information.\r\n\r\nFor these reasons, I think we should consider punting this entirely.\r\n\r\n\r\n",
+          "createdAt": "2021-12-13T15:17:04Z",
+          "updatedAt": "2021-12-13T15:17:04Z"
+        },
+        {
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I think it's true that we can't do much about replays of the same application data, since a server can't distinguish between the scenario you describe (proxy forces client to replay data with a new transaction) and a dishonest client that's simply replaying the same application data. But I think we can do something here about replays of the encapsulated requests. Whether or not we do seems to boil down to the threat model and the relative cost of attack. \r\n\r\nHow hard is it for an attacker to trigger these client-side replays? Trivial for the proxy, as noted, and certainly easier than transparently storing and replaying client requests in the future. However, the client does have to actively generate the new transaction, so it has the opportunity to try and detect this sort of misbehavior. (Whether or not it could distinguish between a maliciously truncated transport connection by an on-path attacker, a maliciously truncated connection by the proxy, or a legitimate error seems a separable question.)\r\n\r\nOn balance, I think the added complexity here is palatable for what can be a pretty trivial attack to be carried out by malicious proxies without the client seeing anything.",
+          "createdAt": "2021-12-13T15:49:52Z",
+          "updatedAt": "2021-12-13T15:49:52Z"
+        },
+        {
+          "author": "ekr",
+          "authorAssociation": "NONE",
+          "body": "I certainly agree that the attack is trivial. My point is just that the application layer protocol that cares about replay will need A-R defenses anyway and so won't this be redundant?",
+          "createdAt": "2021-12-13T15:59:05Z",
+          "updatedAt": "2021-12-13T15:59:05Z"
+        },
+        {
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Possibly, yeah. We should work through some use cases to see if it's truly needed at this layer. ",
+          "createdAt": "2021-12-13T16:05:09Z",
+          "updatedAt": "2021-12-13T16:05:09Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "COLLABORATOR",
+          "body": "There's an alternative: we suggest/recommend that clients populate the `Date` header field in requests and allow/encourage the anti-replay to occur at the next layer up.  Parsing `Date` is annoying and error prone, but it would mean that the design is kept simple at this layer.",
+          "createdAt": "2021-12-13T20:08:36Z",
+          "updatedAt": "2021-12-13T20:08:36Z"
+        },
+        {
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@martinthomson that seems like a reasonable alternative! ",
+          "createdAt": "2021-12-14T00:13:16Z",
+          "updatedAt": "2021-12-14T00:13:16Z"
+        }
+      ]
     },
     {
       "number": 77,
@@ -1090,6 +1147,30 @@
       "updatedAt": "2021-12-10T15:54:36Z",
       "closedAt": null,
       "comments": []
+    },
+    {
+      "number": 89,
+      "id": "I_kwDOE6fLGM5ARX75",
+      "title": "Time correction for anti-replay",
+      "url": "https://github.com/ietf-wg-ohai/oblivious-http/issues/89",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "In #76 and #88, we're talking about adding a timestamp to requests.  The problem with that is that - unlike TLS - we don't have any way to correct for gross clock errors.\r\n\r\nTLS manages this easily by leveraging a previous session to make that correction, reducing any relative clock error to the amount of drift over the week that a ticket can be used for early data.  This design has nothing like that it can use.\r\n\r\nTo correct for clock errors, we should think about whether the server should be able to signal that the request was rejected as a result of the time being too far out of synchronization.",
+      "createdAt": "2021-12-13T09:43:52Z",
+      "updatedAt": "2021-12-13T23:30:10Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "martinthomson",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The problem with allowing a server to correct your time is that you might be tricked into setting a time that is useful for tracking you.  To that end, if we build a mechanism we need either to recommend that clients :\r\n\r\n1. seek an independent and trustworthy source of time rather than use any time that the server has provided; that is, the signal is an error code, without a direct means of correcting client time\r\n\r\n2. only use any server-provided time correction for an immediate retry; clients cannot remember that time for any requests that they wish to remain unlinked to the original; that is, it might be OK for a retry to be linked to the first attempt, but clients should not allow server-provided information to affect multiple requests",
+          "createdAt": "2021-12-13T23:30:10Z",
+          "updatedAt": "2021-12-13T23:30:10Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -4580,6 +4661,265 @@
           "body": "",
           "createdAt": "2021-12-10T14:58:16Z",
           "updatedAt": "2021-12-10T14:58:16Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 86,
+      "id": "PR_kwDOE6fLGM4vvT25",
+      "title": "Provide better key diversity",
+      "url": "https://github.com/ietf-wg-ohai/oblivious-http/pull/86",
+      "state": "MERGED",
+      "author": "martinthomson",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This is a breaking change, but I think that it's worthwhile.  \"request\" is an extraordinary generic string and the risk of it being used in another context is too high.",
+      "createdAt": "2021-12-13T06:34:56Z",
+      "updatedAt": "2021-12-14T00:14:20Z",
+      "baseRepository": "ietf-wg-ohai/oblivious-http",
+      "baseRefName": "main",
+      "baseRefOid": "1c49ebaff93d1f9f7aa96b8fd051b5356629e025",
+      "headRepository": "martinthomson/oblivious-http",
+      "headRefName": "label-diversity",
+      "headRefOid": "7403c75c11b4668a885c92c9ea484782802a7543",
+      "closedAt": "2021-12-14T00:14:20Z",
+      "mergedAt": "2021-12-14T00:14:20Z",
+      "mergedBy": "chris-wood",
+      "mergeCommit": {
+        "oid": "a5264e9a73313f7ab9916f8372cdf279a6acaca5"
+      },
+      "comments": [
+        {
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "body": "We can address test vectors in a followup PR. ",
+          "createdAt": "2021-12-13T13:17:51Z",
+          "updatedAt": "2021-12-13T13:17:51Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOE6fLGM4xfDKR",
+          "commit": {
+            "abbreviatedOid": "7403c75"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-12-13T13:17:15Z",
+          "updatedAt": "2021-12-13T13:17:15Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 87,
+      "id": "PR_kwDOE6fLGM4vvT6k",
+      "title": "Describe Nenc and Nk together.",
+      "url": "https://github.com/ietf-wg-ohai/oblivious-http/pull/87",
+      "state": "MERGED",
+      "author": "martinthomson",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Nk wasn't described properly before.  This improves that, but puts the citations together.",
+      "createdAt": "2021-12-13T06:35:25Z",
+      "updatedAt": "2021-12-13T13:15:52Z",
+      "baseRepository": "ietf-wg-ohai/oblivious-http",
+      "baseRefName": "main",
+      "baseRefOid": "1c49ebaff93d1f9f7aa96b8fd051b5356629e025",
+      "headRepository": "martinthomson/oblivious-http",
+      "headRefName": "nenc-nk",
+      "headRefOid": "fbeefd88fa38cfafe7e098057b6bb71324b8ca3f",
+      "closedAt": "2021-12-13T13:15:51Z",
+      "mergedAt": "2021-12-13T13:15:51Z",
+      "mergedBy": "chris-wood",
+      "mergeCommit": {
+        "oid": "da07f309a1a4fd04f667afdc0c0748f7658db83f"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOE6fLGM4xfCx8",
+          "commit": {
+            "abbreviatedOid": "fbeefd8"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-12-13T13:15:47Z",
+          "updatedAt": "2021-12-13T13:15:47Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 88,
+      "id": "PR_kwDOE6fLGM4vvaTH",
+      "title": "Add a timestamp for anti-replay",
+      "url": "https://github.com/ietf-wg-ohai/oblivious-http/pull/88",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-12-13T07:21:52Z",
+      "updatedAt": "2021-12-13T20:50:15Z",
+      "baseRepository": "ietf-wg-ohai/oblivious-http",
+      "baseRefName": "main",
+      "baseRefOid": "1c49ebaff93d1f9f7aa96b8fd051b5356629e025",
+      "headRepository": "martinthomson/oblivious-http",
+      "headRefName": "anti-replay",
+      "headRefOid": "4eb7ecfa5f6a4211922222b01b92b579db52dc8a",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks for adding this change! I think my largest outstanding question is on the width of the timestamp. (We can always land 32 bits now and revisit later, of course.)",
+          "createdAt": "2021-12-13T14:10:43Z",
+          "updatedAt": "2021-12-13T14:10:43Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOE6fLGM4xfLms",
+          "commit": {
+            "abbreviatedOid": "03e51f6"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-12-13T13:47:32Z",
+          "updatedAt": "2021-12-13T14:10:02Z",
+          "comments": [
+            {
+              "originalPosition": 125,
+              "body": "```suggestion\r\nvalue is a high-entropy value that is freshly generated for every request, so \r\ntwo valid requests will have different values with overwhelming probability.\r\n```",
+              "createdAt": "2021-12-13T13:47:33Z",
+              "updatedAt": "2021-12-13T14:10:02Z"
+            },
+            {
+              "originalPosition": 148,
+              "body": "After re-reading this sentence, I'm no longer sure I understand what it's trying to say. Can we elaborate, or maybe add an example?",
+              "createdAt": "2021-12-13T13:53:12Z",
+              "updatedAt": "2021-12-13T14:10:02Z"
+            },
+            {
+              "originalPosition": 170,
+              "body": "```suggestion\r\nwindow that is large enough to allow for differences between client and server clocks.\r\n```",
+              "createdAt": "2021-12-13T13:54:45Z",
+              "updatedAt": "2021-12-13T14:10:02Z"
+            },
+            {
+              "originalPosition": 178,
+              "body": "```suggestion\r\nused for TLS. Indeed, in practice, client clock skew can be as large as a day {{?CLOCKSKEW=DOI.10.1145/3133956.3134007}} for a non-negligible amount of clients.\r\n\r\nServers MUST NOT treat the time window as secret information. An attacker can actively\r\nprobe the server with specially crafted request timestamps to determine the time window\r\nover which the server will accept responses. \r\n```",
+              "createdAt": "2021-12-13T13:58:25Z",
+              "updatedAt": "2021-12-13T14:10:02Z"
+            },
+            {
+              "originalPosition": 14,
+              "body": "32 bits of seconds seems quite wide, though it is the smallest reasonable power of 2 that buys us at least a day's worth of clock skew. In a perfect world, I'd prefer this be 24 bits or shorter. Do we have up-to-date data on clock skew we can use to make a more informed choice here? (This assumes honest clients, but maybe that's not the right target, as discussed in #89.)",
+              "createdAt": "2021-12-13T14:09:54Z",
+              "updatedAt": "2021-12-13T15:09:15Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM4xfTA5",
+          "commit": {
+            "abbreviatedOid": "03e51f6"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-12-13T14:12:20Z",
+          "updatedAt": "2021-12-13T14:12:21Z",
+          "comments": [
+            {
+              "originalPosition": 14,
+              "body": "cc @tfpauly and @davidben, who might have a better view from the client",
+              "createdAt": "2021-12-13T14:12:20Z",
+              "updatedAt": "2021-12-13T14:12:21Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOE6fLGM4xg9R_",
+          "commit": {
+            "abbreviatedOid": "03e51f6"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "Thanks.  Let's leave this open for now while we discuss the approach.",
+          "createdAt": "2021-12-13T20:30:01Z",
+          "updatedAt": "2021-12-13T20:32:02Z",
+          "comments": [
+            {
+              "originalPosition": 14,
+              "body": "My sense is that what clock skew will drive is the width of the acceptance window if a server is doing anti-replay.  If we want to reduce that, we need better clocks in clients (hah, as if!) or some means of correcting.",
+              "createdAt": "2021-12-13T20:30:01Z",
+              "updatedAt": "2021-12-13T20:32:02Z"
+            },
+            {
+              "originalPosition": 148,
+              "body": "Yeah, we might just drop this entirely.  It was supposed to be a call out to applications managing the risk themselves.",
+              "createdAt": "2021-12-13T20:30:45Z",
+              "updatedAt": "2021-12-13T20:32:02Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 90,
+      "id": "PR_kwDOE6fLGM4vyEMF",
+      "title": "Update examples based on label changes",
+      "url": "https://github.com/ietf-wg-ohai/oblivious-http/pull/90",
+      "state": "MERGED",
+      "author": "martinthomson",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-12-13T20:23:12Z",
+      "updatedAt": "2021-12-14T00:14:02Z",
+      "baseRepository": "ietf-wg-ohai/oblivious-http",
+      "baseRefName": "main",
+      "baseRefOid": "da07f309a1a4fd04f667afdc0c0748f7658db83f",
+      "headRepository": "martinthomson/oblivious-http",
+      "headRefName": "label-vectors",
+      "headRefOid": "b8334cabe3f2a63c711e4503e3be488246681220",
+      "closedAt": "2021-12-14T00:14:02Z",
+      "mergedAt": "2021-12-14T00:14:02Z",
+      "mergedBy": "chris-wood",
+      "mergeCommit": {
+        "oid": "fc28c2e70fff99a82fbb9e11fc4ab332d4fe4e98"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOE6fLGM4xhmGw",
+          "commit": {
+            "abbreviatedOid": "b8334ca"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-12-14T00:13:58Z",
+          "updatedAt": "2021-12-14T00:13:58Z",
           "comments": []
         }
       ]
