@@ -1770,8 +1770,8 @@ identified by <code>kemID</code>,<a href="#section-5.1-2.1" class="pilcrow">¶</
         </ul>
 <p id="section-5.1-3">The client then constructs an encapsulated request, <code>enc_request</code>, as follows:<a href="#section-5.1-3" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-5.1-4">
-<li id="section-5.1-4.1">Compute an HPKE context using <code>pkR</code>, yielding <code>context</code> and encapsulation
-key <code>enc</code>.<a href="#section-5.1-4.1" class="pilcrow">¶</a>
+<li id="section-5.1-4.1">Compute an HPKE context using <code>pkR</code> and a label of "ohttp request", yielding
+<code>context</code> and encapsulation key <code>enc</code>.<a href="#section-5.1-4.1" class="pilcrow">¶</a>
 </li>
           <li id="section-5.1-4.2">Construct associated data, <code>aad</code>, by concatenating the values of <code>keyID</code>,
 <code>kemID</code>, <code>kdfID</code>, and <code>aeadID</code>, as one 8-bit integer and three 16-bit
@@ -1789,7 +1789,7 @@ structure.<a href="#section-5.1-5" class="pilcrow">¶</a></p>
 <p id="section-5.1-6">In pseudocode, this procedure is as follows:<a href="#section-5.1-6" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5.1-7">
 <pre>
-enc, context = SetupBaseS(pkR, "request")
+enc, context = SetupBaseS(pkR, "ohttp request")
 aad = concat(encode(1, keyID),
              encode(2, kemID),
              encode(2, kdfID),
@@ -1812,8 +1812,8 @@ a. If <code>keyID</code> does not identify a key matching the type of <code>kemI
 b. If <code>kdfID</code> and <code>aeadID</code> identify a combination of KDF and AEAD that the
    server is unwilling to use with <code>skR</code>, the server returns an error.<a href="#section-5.1-9.1.3" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-5.1-9.2">Compute an HPKE context using <code>skR</code> and the encapsulated key <code>enc</code>,
-yielding <code>context</code>.<a href="#section-5.1-9.2" class="pilcrow">¶</a>
+          <li id="section-5.1-9.2">Compute an HPKE context using <code>skR</code>, a label of "ohttp request", and the
+encapsulated key <code>enc</code>, yielding <code>context</code>.<a href="#section-5.1-9.2" class="pilcrow">¶</a>
 </li>
           <li id="section-5.1-9.3">Construct additional associated data, <code>aad</code>, from <code>keyID</code>, <code>kemID</code>, <code>kdfID</code>,
 and <code>aeadID</code> or as the first seven bytes of <code>enc_request</code>.<a href="#section-5.1-9.3" class="pilcrow">¶</a>
@@ -1830,7 +1830,7 @@ aad = concat(encode(1, keyID),
              encode(2, kemID),
              encode(2, kdfID),
              encode(2, aeadID))
-context = SetupBaseR(enc, skR, "request")
+context = SetupBaseR(enc, skR, "ohttp request")
 request, error = context.Open(aad, ct)
 </pre><a href="#section-5.1-11" class="pilcrow">¶</a>
 </div>
@@ -1845,9 +1845,9 @@ request, error = context.Open(aad, ct)
 <code>response</code>, servers generate an Encapsulated Response <code>enc_response</code> as
 follows:<a href="#section-5.2-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-5.2-2">
-<li id="section-5.2-2.1">Export a secret <code>secret</code> from <code>context</code>, using the string "response" as context.
-The length of this secret is <code>max(Nn, Nk)</code>, where <code>Nn</code> and <code>Nk</code> are the length
-of AEAD key and nonce associated with <code>context</code>.<a href="#section-5.2-2.1" class="pilcrow">¶</a>
+<li id="section-5.2-2.1">Export a secret <code>secret</code> from <code>context</code>, using the string "ohttp response" as
+context.  The length of this secret is <code>max(Nn, Nk)</code>, where <code>Nn</code> and <code>Nk</code> are
+the length of AEAD key and nonce associated with <code>context</code>.<a href="#section-5.2-2.1" class="pilcrow">¶</a>
 </li>
           <li id="section-5.2-2.2">Generate a random value of length <code>max(Nn, Nk)</code> bytes, called <code>response_nonce</code>.<a href="#section-5.2-2.2" class="pilcrow">¶</a>
 </li>
@@ -1875,7 +1875,7 @@ ambiguity in parsing either <code>response_nonce</code> or <code>ct</code>.<a hr
 <p id="section-5.2-3">In pseudocode, this procedure is as follows:<a href="#section-5.2-3" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5.2-4">
 <pre>
-secret = context.Export("response", Nk)
+secret = context.Export("ohttp response", Nk)
 response_nonce = random(max(Nn, Nk))
 salt = concat(enc, response_nonce)
 prk = Extract(salt, secret)
@@ -2414,6 +2414,12 @@ Content) status code.<a href="#section-8.3-4" class="pilcrow">¶</a></p>
 <p id="section-8.3-5">A server can also use a 422 status code if the server has a key that
 corresponds to the key identifier, but the encapsulated request cannot be
 successfully decrypted using the key.<a href="#section-8.3-5" class="pilcrow">¶</a></p>
+<p id="section-8.3-6">A server MUST ensure that the HPKE keys it uses are not valid for any other
+protocol that uses HPKE with the "ohttp request" label.  Designers of other
+protocols, especially new versions of this protocol, can ensure key diversity by
+choosing a different label in their use of HPKE.  The "ohttp response" label was
+chosen for symmetry only as it provides key diversity only within the HPKE
+context created using the "ohttp request" label.<a href="#section-8.3-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="replay-attacks">
